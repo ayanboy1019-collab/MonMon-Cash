@@ -1,0 +1,83 @@
+// ============================================================
+//  firestore.rules  –  Firebase security rules
+//
+//  Deploy: firebase deploy --only firestore:rules
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper functions ──────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function isNotBanned() {
+      return !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isBanned;
+    }
+
+    // ── Users collection ──────────────────────────────────
+    match /users/{userId} {
+      // Users can read their own doc; admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Users cannot write directly – all coin updates go through
+      // Cloud Functions or Firestore transactions in the app.
+      // Only admins can write (for testing; in prod use Cloud Functions)
+      allow write: if isAdmin();
+
+      // Cooldowns sub-collection: only the user can read/write their own
+      match /cooldowns/{gameId} {
+        allow read, write: if isOwner(userId) && isNotBanned();
+      }
+    }
+
+    // ── Withdrawals ───────────────────────────────────────
+    match /withdrawals/{docId} {
+      // Users can read their own withdrawals
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+
+      // Users can create (but not update status)
+      allow create: if isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid &&
+        isNotBanned() &&
+        request.resource.data.status == 'pending';
+
+      // Only admins can approve/reject
+      allow update: if isAdmin();
+    }
+
+    // ── Coin transactions (audit log) ─────────────────────
+    match /coinTransactions/{docId} {
+      allow read: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || isAdmin()
+      );
+      // Written server-side only; users cannot write directly
+      allow write: if isAdmin();
+    }
+
+    // ── Leaderboard (read-only for all authenticated users) ──
+    match /leaderboard/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ── Config (admin only) ───────────────────────────────
+    match /config/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,77 @@
+name: cashzone_pro
+description: CashZone Pro - Earn real money through mini games and rewards
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # ─── Firebase ───────────────────────────────────────────
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_messaging: ^14.7.10   # Push notifications
+  firebase_analytics: ^10.8.0
+
+  # ─── Authentication ─────────────────────────────────────
+  google_sign_in: ^6.2.1
+
+  # ─── Ads ────────────────────────────────────────────────
+  google_mobile_ads: ^4.0.0      # Admob / Unity adapter ready
+  # applovin_max: ^3.2.0          # Uncomment after AppLovin setup
+
+  # ─── State Management ───────────────────────────────────
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+
+  # ─── UI & Animations ────────────────────────────────────
+  flutter_animate: ^4.5.0
+  lottie: ^3.1.0                 # Lottie JSON animations
+  confetti: ^0.7.0               # Win celebration effects
+  shimmer: ^3.0.0                # Loading shimmer effects
+  fl_chart: ^0.66.2              # Charts for admin dashboard
+
+  # ─── Games & Interactivity ──────────────────────────────
+  flame: ^1.17.0                 # Game engine for runner/shooter
+  audioplayers: ^6.0.0           # Sound effects
+  vibration: ^1.8.4              # Haptic feedback
+
+  # ─── Utilities ──────────────────────────────────────────
+  uuid: ^4.3.3                   # Unique referral codes
+  intl: ^0.19.0                  # Currency formatting
+  url_launcher: ^6.2.4           # Open payment apps
+  share_plus: ^9.0.0             # Share referral link
+  package_info_plus: ^8.0.0
+  connectivity_plus: ^6.0.3
+  local_auth: ^2.2.0             # Biometric for withdrawals
+
+  # ─── HTTP ───────────────────────────────────────────────
+  http: ^1.2.1
+  dio: ^5.4.1
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  flutter_launcher_icons: ^0.13.1
+
+# ─── App Icon Config ──────────────────────────────────────
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#1A0533"
+  adaptive_icon_foreground: "assets/images/app_icon_fg.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/sounds/
+    - assets/lottie/
